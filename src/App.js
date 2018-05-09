@@ -11,13 +11,30 @@ class App extends Component {
     this.trackEmailState = this.trackEmailState.bind(this);
     this.loginUser = this.loginUser.bind(this);
     this.logout = this.logout.bind(this);
+    this.closeAlert = this.closeAlert.bind(this);
     this.state = {
       emailInput: '',
       email: '',
       uid: '',
       loggedIn: false,
-      loading: false
+      loading: false,
+      newUserForm: false,
+      errorMessage: '',
     };
+  }
+  
+  errorHandling(params) {
+    if (params.logout) {
+      this.setState({
+        emailInput: '',
+        email: '',
+        uid: '',
+        loggedIn: false,
+        loading: false,
+      });      
+    }
+    this.setState({ errorMessage: params.msg });
+    console.error(params.e);
   }
   
   trackEmailState({ target }) {
@@ -38,9 +55,14 @@ class App extends Component {
   async submitEmail(e) {
     e.preventDefault();
     this.setState({ loading: true })
-    const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
-    const user = await dbCall.json();
-    this.loginUser(user);
+    this.closeAlert();
+    try {
+      const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
+      const user = await dbCall.json();
+      user.error ? this.setState({ newUserForm: true }) : this.loginUser(user);      
+    } catch(e) {
+      this.errorHandling({ e: e,msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
+    }
   }
   
   logout(e) {
@@ -53,6 +75,10 @@ class App extends Component {
       loading: false
     });
   }
+  
+  closeAlert() {
+    this.setState({ errorMessage: '' });
+  }
 
   render() {
     return (
@@ -64,13 +90,21 @@ class App extends Component {
         <p className="App-intro">
           Where storing your ideas and hitting random API endpoints is our business.
         </p>
-          <SubmitEmail
-            submitEmail={this.submitEmail}
-            trackEmailState={this.trackEmailState}
-            logout={this.logout}
-            loading={this.state.loading}
-            user={this.state.email}
-          />
+        {
+          !!this.state.errorMessage.length &&
+            <div className="container">
+              <div className="alert alert-danger flash-alert" role="alert" onClick={this.closeAlert}>
+                { this.state.errorMessage }
+              </div>            
+            </div>
+        }
+        <SubmitEmail
+          submitEmail={this.submitEmail}
+          trackEmailState={this.trackEmailState}
+          logout={this.logout}
+          loading={this.state.loading}
+          user={this.state.email}
+        />
       </div>
     );
   }
