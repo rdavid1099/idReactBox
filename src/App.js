@@ -9,22 +9,46 @@ class App extends Component {
     super(props)
     this.submitEmail = this.submitEmail.bind(this);
     this.trackEmailState = this.trackEmailState.bind(this);
+    this.logout = this.logout.bind(this);
     this.state = {
+      emailInput: '',
       email: '',
-      user: '',
-    }
+      uid: '',
+      loggedIn: false,
+      loading: false
+    };
   }
   
   trackEmailState({ target }) {
-    const email = target.value;
-    this.setState({ email })
+    const emailInput = target.value;
+    this.setState({ emailInput });
   }
 
   submitEmail(e) {
     e.preventDefault();
-    fetch(`http://localhost:5555/api/v1/user?email=${this.state.email}`)
+    this.setState({ loading: true })
+    fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`)
       .then(response => response.json())
-      .then(user => this.setState({ user: user.email }))
+      .then(user => {
+        this.setState({
+          email: user.email,
+          uid: user.id,
+          loggedIn: true,
+          loading: false,
+          emailInput: '',
+        })
+      })
+  }
+  
+  logout(e) {
+    e.preventDefault();
+    this.setState({
+      emailInput: '',
+      email: '',
+      uid: '',
+      loggedIn: false,
+      loading: false
+    });
   }
 
   render() {
@@ -32,15 +56,18 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to IdReactBox {this.state.user.length ? this.state.user : '¯\\_(ツ)_/¯'}</h1>
+          <h1 className="App-title">Welcome to IdReactBox{this.state.email.length ? `, ${this.state.email}` : ' ¯\\_(ツ)_/¯'}</h1>
         </header>
         <p className="App-intro">
           Where storing your ideas and hitting random API endpoints is our business.
         </p>
-        <SubmitEmail 
-          submitEmail={this.submitEmail}
-          trackEmailState={this.trackEmailState}
-        />
+          <SubmitEmail
+            submitEmail={this.submitEmail}
+            trackEmailState={this.trackEmailState}
+            logout={this.logout}
+            loading={this.state.loading}
+            user={this.state.email}
+          />
       </div>
     );
   }
