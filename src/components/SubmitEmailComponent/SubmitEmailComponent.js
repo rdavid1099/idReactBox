@@ -1,6 +1,18 @@
 import React from 'react';
 import LoadingComponent from '../LoadingComponent'
 
+const buttonOpts = (props, opts) => {
+  let response;
+  if (props.user.length) {
+    response = opts.onClick ? props.logout : 'Logout';
+  } else if (props.newUserForm) {
+    response = opts.onClick ? props.registerEmail : 'Register';
+  } else {
+    response = opts.onClick ? props.submitEmail : 'Submit';
+  }
+  return response;
+};
+
 const SubmitEmail = props => (
   <div className="container">
     {
@@ -19,7 +31,13 @@ const SubmitEmail = props => (
                     placeholder="Enter email"
                     onKeyUp={props.trackEmailState}
                   />
-                  <small id="emailHelp" className="form-text text-muted">Load Ideas Attached to Given Email Address, Otherwise Continue as 'Guest'</small>              
+                  <small id="emailHelp" className="form-text text-muted">
+                    {
+                      props.newUserForm ?
+                      `${props.user} is not registered with IdReact Box. Register it now?` :
+                      "Load Ideas Attached to Given Email Address, Otherwise Continue as 'Guest'"
+                    }
+                  </small>
                 </div> :
                 <div>
                   <h5>Viewing ideas logged by { props.user }</h5>
@@ -28,14 +46,10 @@ const SubmitEmail = props => (
             </div>
             <div className="col-2"></div>
           </div>
-          {
-            !props.user.length ?
-              <button type="submit" className="btn btn-primary" onClick={props.submitEmail}>Submit</button> :
-              <button type="submit" className="btn btn-primary" onClick={props.logout}>Logout</button>
-            }
-        </form>                        
+          <button type="submit" className="btn btn-primary" onClick={buttonOpts(props, {onClick: true})}>{buttonOpts(props, {text: true})}</button>
+        </form>
     }
-  </div>  
+  </div>
 )
 
 export default SubmitEmail;

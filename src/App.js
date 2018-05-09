@@ -12,6 +12,7 @@ class App extends Component {
     this.loginUser = this.loginUser.bind(this);
     this.logout = this.logout.bind(this);
     this.closeAlert = this.closeAlert.bind(this);
+    this.registerEmail = this.registerEmail.bind(this);
     this.state = {
       emailInput: '',
       email: '',
@@ -22,7 +23,7 @@ class App extends Component {
       errorMessage: '',
     };
   }
-  
+
   errorHandling(params) {
     if (params.logout) {
       this.setState({
@@ -31,17 +32,17 @@ class App extends Component {
         uid: '',
         loggedIn: false,
         loading: false,
-      });      
+      });
     }
     this.setState({ errorMessage: params.msg });
     console.error(params.e);
   }
-  
+
   trackEmailState({ target }) {
     const emailInput = target.value;
     this.setState({ emailInput });
   }
-  
+
   loginUser(user) {
     this.setState({
       email: user.email,
@@ -59,12 +60,25 @@ class App extends Component {
     try {
       const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
       const user = await dbCall.json();
-      user.error ? this.setState({ newUserForm: true }) : this.loginUser(user);      
+      debugger
+      user.error ? this.setState({ newUserForm: true, loading: false }) : this.loginUser(user);
     } catch(e) {
-      this.errorHandling({ e: e,msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
+      this.errorHandling({ e: e, msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
     }
   }
-  
+
+  async registerEmail(e) {
+    e.preventDefault();
+    this.setState({ loading: true })
+    try {
+      const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
+      const user = await dbCall.json();
+      user.error ? this.setState({ newUserForm: true, loading: false }) : this.loginUser(user);
+    } catch(e) {
+      this.errorHandling({ e: e, msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
+    }
+  }
+
   logout(e) {
     e.preventDefault();
     this.setState({
@@ -72,10 +86,11 @@ class App extends Component {
       email: '',
       uid: '',
       loggedIn: false,
-      loading: false
+      loading: false,
+      newUserForm: false,
     });
   }
-  
+
   closeAlert() {
     this.setState({ errorMessage: '' });
   }
@@ -95,15 +110,17 @@ class App extends Component {
             <div className="container">
               <div className="alert alert-danger flash-alert" role="alert" onClick={this.closeAlert}>
                 { this.state.errorMessage }
-              </div>            
+              </div>
             </div>
         }
         <SubmitEmail
           submitEmail={this.submitEmail}
           trackEmailState={this.trackEmailState}
           logout={this.logout}
+          registerEmail={this.registerEmail}
           loading={this.state.loading}
           user={this.state.email}
+          newUserForm={this.state.newUserForm}
         />
       </div>
     );
