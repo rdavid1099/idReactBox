@@ -9,6 +9,7 @@ class App extends Component {
     super(props)
     this.submitEmail = this.submitEmail.bind(this);
     this.trackEmailState = this.trackEmailState.bind(this);
+    this.loginUser = this.loginUser.bind(this);
     this.logout = this.logout.bind(this);
     this.state = {
       emailInput: '',
@@ -23,21 +24,23 @@ class App extends Component {
     const emailInput = target.value;
     this.setState({ emailInput });
   }
+  
+  loginUser(user) {
+    this.setState({
+      email: user.email,
+      uid: user.id,
+      loggedIn: true,
+      loading: false,
+      emailInput: '',
+    });
+  }
 
-  submitEmail(e) {
+  async submitEmail(e) {
     e.preventDefault();
     this.setState({ loading: true })
-    fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`)
-      .then(response => response.json())
-      .then(user => {
-        this.setState({
-          email: user.email,
-          uid: user.id,
-          loggedIn: true,
-          loading: false,
-          emailInput: '',
-        })
-      })
+    const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
+    const user = await dbCall.json();
+    this.loginUser(user);
   }
   
   logout(e) {
