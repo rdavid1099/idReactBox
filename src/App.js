@@ -2,7 +2,28 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import SubmitEmail from './components/SubmitEmailComponent';
+
 class App extends Component {
+  constructor(props) {
+    super(props)
+    this.submitEmail = this.submitEmail.bind(this);
+    this.trackEmailState = this.trackEmailState.bind(this);
+    this.state = {
+      email: '',
+    }
+  }
+  
+  trackEmailState({ target }) {
+    const email = target.value;
+    this.setState({ email })
+  }
+
+  submitEmail(e) {
+    e.preventDefault();
+    console.log(this.state.email)
+  }
+
   render() {
     return (
       <div className="App">
@@ -13,7 +34,10 @@ class App extends Component {
         <p className="App-intro">
           Where storing your ideas and hitting random API endpoints is our business.
         </p>
-        
+        <SubmitEmail 
+          submitEmail={this.submitEmail}
+          trackEmailState={this.trackEmailState}
+        />
       </div>
     );
   }
