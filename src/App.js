@@ -11,6 +11,7 @@ class App extends Component {
     this.trackEmailState = this.trackEmailState.bind(this);
     this.state = {
       email: '',
+      user: '',
     }
   }
   
@@ -21,7 +22,9 @@ class App extends Component {
 
   submitEmail(e) {
     e.preventDefault();
-    console.log(this.state.email)
+    fetch(`http://localhost:5555/api/v1/user?email=${this.state.email}`)
+      .then(response => response.json())
+      .then(user => this.setState({ user: user.email }))
   }
 
   render() {
@@ -29,7 +32,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to IdReactBox ¯\_(ツ)_/¯</h1>
+          <h1 className="App-title">Welcome to IdReactBox {this.state.user.length ? this.state.user : '¯\\_(ツ)_/¯'}</h1>
         </header>
         <p className="App-intro">
           Where storing your ideas and hitting random API endpoints is our business.
