@@ -9,4 +9,9 @@ class Api::V1::UserController < ApplicationController
       }
     end
   end
+
+  def create
+    user = User.create!(email: params[:email])
+    render json: user
+  end
 end

@@ -65,11 +65,17 @@ class App extends Component {
     if (e) { e.preventDefault(); }
     this.setState({ loading: true })
     try {
-      const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
+      const dbCall = await fetch('http://localhost:5555/api/v1/user', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: `email=${this.state.emailInput}`,
+      });
       const user = await dbCall.json();
-      user.error ? this.setState({ newUserForm: true, loading: false }) : this.loginUser(user);
+      this.loginUser(user);
     } catch(e) {
-      this.errorHandling({ e: e, msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
+      this.errorHandling({ e }, this.logout);
     }
   }
 
@@ -122,6 +128,7 @@ class App extends Component {
           loading={this.state.loading}
           user={this.state.email}
           newUserForm={this.state.newUserForm}
+          emailInput={this.state.emailInput}
         />
       </div>
     );
