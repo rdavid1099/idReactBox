@@ -40,7 +40,7 @@ class App extends Component {
       params: { max: 10 },
       errorHandling: this.errorHandling,
     });
-    this.setState({ loading: false, guestIdeas, guid })
+    this.setState({ loading: false, guestIdeas, guid });
   }
 
   errorHandling(params, cb) {

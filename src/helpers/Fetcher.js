@@ -1,5 +1,5 @@
 function renderParams(params) {
-  if (Object.keys(params).length === 0) { return '' }
+  if (!params || Object.keys(params).length === 0) { return '' }
   return Object.keys(params).reduce((result, key) => `${result}${key}=${params[key]}&`, '?').slice(0, -1)
 }
 
@@ -11,14 +11,20 @@ const routes = {
 const Fetcher = {};
 
 Fetcher.getUid = async (id = {email: 'guest'}) => {
-  const dbCall = await fetch(routes.getUser(id));
-  const user = await dbCall.json();
+  const user = await this.a.get({
+    route: 'getUser',
+    id,
+  })
   return user.id;
 }
 
 Fetcher.get = async opts => {
-  const dbCall = await fetch(routes[opts.route](opts.id) + renderParams(opts.params));
-  return await dbCall.json();
+  try {
+    const dbCall = await fetch(routes[opts.route](opts.id) + renderParams(opts.params));
+    return await dbCall.json();
+  } catch(e) {
+    if (opts.errorHandling) { opts.errorHandling({ e }); }
+  }
 }
 
 export default Fetcher;
