@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { StringHelper } from './helpers';
+import { StringHelper, IdeaFetcher } from './helpers';
 
+import LoadingComponent from './components/LoadingComponent';
 import SubmitEmail from './components/SubmitEmailComponent';
 import FlashMessageComponent from './components/FlashMessageComponent';
 import IdeasComponent from './components/IdeasComponent';
@@ -22,12 +23,21 @@ class App extends Component {
       email: '',
       uid: '',
       loggedIn: false,
-      loading: false,
+      loading: 'app',
       newUserForm: false,
       errorMessage: '',
       guestIdeas: [],
       userIdeas: [],
     };
+  }
+
+  async componentWillMount() {
+    const guestIdeas = await IdeaFetcher.get({
+      user: 'guest',
+      max: 10,
+      errorHandling: this.errorHandling,
+    })
+    this.setState({ loading: false, guestIdeas })
   }
 
   errorHandling(params, cb) {
@@ -54,7 +64,7 @@ class App extends Component {
 
   async submitEmail(e) {
     if (e) { e.preventDefault(); }
-    this.setState({ loading: true })
+    this.setState({ loading: 'submitEmail' })
     this.closeAlert();
     try {
       const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
@@ -67,7 +77,7 @@ class App extends Component {
 
   async registerEmail(e) {
     if (e) { e.preventDefault(); }
-    this.setState({ loading: true })
+    this.setState({ loading: 'submitEmail' })
     try {
       const dbCall = await fetch('http://localhost:5555/api/v1/user', {
         method: 'post',
@@ -114,35 +124,41 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to IdReactBox{this.welcome()}</h1>
-        </header>
-        <p className="App-intro">
-          Where storing your ideas and hitting random API endpoints is our business.
-        </p>
         {
-          !!this.state.errorMessage.length &&
-          <FlashMessageComponent
-            errorMessage={this.state.errorMessage}
-            closeAlert={this.closeAlert}
-          />
+          this.state.loading === 'app' ?
+          <LoadingComponent /> :
+          <div>
+            <header className="App-header">
+              <img src={logo} className="App-logo" alt="logo" />
+              <h1 className="App-title">Welcome to IdReactBox{this.welcome()}</h1>
+            </header>
+            <p className="App-intro">
+              Where storing your ideas and hitting random API endpoints is our business.
+            </p>
+            {
+              !!this.state.errorMessage.length &&
+              <FlashMessageComponent
+                errorMessage={this.state.errorMessage}
+                closeAlert={this.closeAlert}
+              />
+            }
+            <SubmitEmail
+              submitEmail={this.submitEmail}
+              trackEmailState={this.trackEmailState}
+              logout={this.logout}
+              registerEmail={this.registerEmail}
+              loading={this.state.loading}
+              user={this.state.email}
+              newUserForm={this.state.newUserForm}
+              emailInput={this.state.emailInput}
+            />
+            <IdeasComponent
+              trackNewIdeaState={this.trackNewIdeaState}
+              guestIdeas={this.state.guestIdeas}
+              userIdeas={this.state.userIdeas}
+            />
+          </div>
         }
-        <SubmitEmail
-          submitEmail={this.submitEmail}
-          trackEmailState={this.trackEmailState}
-          logout={this.logout}
-          registerEmail={this.registerEmail}
-          loading={this.state.loading}
-          user={this.state.email}
-          newUserForm={this.state.newUserForm}
-          emailInput={this.state.emailInput}
-        />
-        <IdeasComponent
-          trackNewIdeaState={this.trackNewIdeaState}
-          guestIdeas={this.state.guestIdeas}
-          userIdeas={this.state.userIdeas}
-        />
       </div>
     );
   }

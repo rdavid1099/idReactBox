@@ -16,7 +16,7 @@ const buttonOpts = (props, opts) => {
 const SubmitEmail = props => (
   <div className="container">
     {
-      props.loading ?
+      props.loading === 'submitEmail' ?
         <LoadingComponent /> :
         <form>
           <div className="row">
