@@ -19,3 +19,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore bundler config.
+/idreact_box_api/.bundle
+
+# Ignore all logfiles and tempfiles.
+/idreact_box_api/log/*
+/idreact_box_api/tmp/*
+/idreact_box_api!/log/.keep
+/idreact_box_api!/tmp/.keep
+
+/idreact_box_api/.byebug_history
