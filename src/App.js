@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { StringHelper, IdeaFetcher } from './helpers';
+import { StringHelper, Fetcher } from './helpers';
 
 import LoadingComponent from './components/LoadingComponent';
 import SubmitEmail from './components/SubmitEmailComponent';
@@ -22,6 +22,7 @@ class App extends Component {
       emailInput: '',
       email: '',
       uid: '',
+      guid: '',
       loggedIn: false,
       loading: 'app',
       newUserForm: false,
@@ -32,12 +33,14 @@ class App extends Component {
   }
 
   async componentWillMount() {
-    const guestIdeas = await IdeaFetcher.get({
-      user: 'guest',
-      max: 10,
+    const guid = await Fetcher.getUid();
+    const guestIdeas = await Fetcher.get({
+      route: 'getIdea',
+      id: { uid: guid },
+      params: { max: 10 },
       errorHandling: this.errorHandling,
-    })
-    this.setState({ loading: false, guestIdeas })
+    });
+    this.setState({ loading: false, guestIdeas, guid })
   }
 
   errorHandling(params, cb) {

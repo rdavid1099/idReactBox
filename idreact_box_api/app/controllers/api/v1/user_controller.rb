@@ -4,7 +4,7 @@ class Api::V1::UserController < ApplicationController
     if user
       render json: user
     else
-      render json: { error: 'User not found' }, status 400
+      render json: { error: 'User not found' }, status: 400
     end
   end
 
@@ -13,7 +13,7 @@ class Api::V1::UserController < ApplicationController
     if user.id
       render json: user
     else
-      render json: user.error.messages, status 400
+      render json: user.error.messages, status: 400
     end
   end
 end

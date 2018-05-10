@@ -1,7 +1,7 @@
 import StringHelper from './StringHelper';
-import IdeaFetcher from './IdeaFetcher';
+import Fetcher from './Fetcher';
 
 export {
   StringHelper,
-  IdeaFetcher,
+  Fetcher,
 }
