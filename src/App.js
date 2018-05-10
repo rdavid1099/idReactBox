@@ -5,6 +5,7 @@ import { StringHelper } from './helpers';
 
 import SubmitEmail from './components/SubmitEmailComponent';
 import FlashMessageComponent from './components/FlashMessageComponent';
+import IdeasComponent from './components/IdeasComponent';
 
 class App extends Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class App extends Component {
     this.logout = this.logout.bind(this);
     this.closeAlert = this.closeAlert.bind(this);
     this.registerEmail = this.registerEmail.bind(this);
+    this.trackNewIdeaState = this.trackNewIdeaState.bind(this);
     this.state = {
       emailInput: '',
       email: '',
@@ -23,6 +25,8 @@ class App extends Component {
       loading: false,
       newUserForm: false,
       errorMessage: '',
+      guestIdeas: [],
+      userIdeas: [],
     };
   }
 
@@ -103,6 +107,10 @@ class App extends Component {
     }
   }
 
+  trackNewIdeaState(e) {
+    return
+  }
+
   render() {
     return (
       <div className="App">
@@ -129,6 +137,11 @@ class App extends Component {
           user={this.state.email}
           newUserForm={this.state.newUserForm}
           emailInput={this.state.emailInput}
+        />
+        <IdeasComponent
+          trackNewIdeaState={this.trackNewIdeaState}
+          guestIdeas={this.state.guestIdeas}
+          userIdeas={this.state.userIdeas}
         />
       </div>
     );
