@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 
 import SubmitEmail from './components/SubmitEmailComponent';
+import FlashMessageComponent from './components/FlashMessageComponent';
 
 class App extends Component {
   constructor(props) {
@@ -99,14 +100,10 @@ class App extends Component {
         </p>
         {
           !!this.state.errorMessage.length &&
-            <div className="container">
-              <div className="alert alert-danger flash-alert" role="alert" onClick={this.closeAlert}>
-                { this.state.errorMessage }
-                <button type="button" className="close" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-            </div>
+          <FlashMessageComponent
+            errorMessage={this.state.errorMessage}
+            closeAlert={this.closeAlert}
+          />
         }
         <SubmitEmail
           submitEmail={this.submitEmail}
