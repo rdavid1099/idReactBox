@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { StringHelper } from './helpers';
 
 import SubmitEmail from './components/SubmitEmailComponent';
 import FlashMessageComponent from './components/FlashMessageComponent';
@@ -88,12 +89,20 @@ class App extends Component {
     this.setState({ errorMessage: '' });
   }
 
+  welcome() {
+    if (this.state.email.length) {
+      return `, ${this.state.email} ${StringHelper.displayEmoji('👋')}`
+    } else {
+      return ' ¯\\_(ツ)_/¯';
+    }
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to IdReactBox{this.state.email.length ? `, ${this.state.email}` : ' ¯\\_(ツ)_/¯'}</h1>
+          <h1 className="App-title">Welcome to IdReactBox{this.welcome()}</h1>
         </header>
         <p className="App-intro">
           Where storing your ideas and hitting random API endpoints is our business.
