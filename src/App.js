@@ -24,18 +24,11 @@ class App extends Component {
     };
   }
 
-  errorHandling(params) {
-    if (params.logout) {
-      this.setState({
-        emailInput: '',
-        email: '',
-        uid: '',
-        loggedIn: false,
-        loading: false,
-      });
-    }
-    this.setState({ errorMessage: params.msg });
+  errorHandling(params, cb) {
+    const msg = params.msg || 'Sorry. Something went wrong. Please try again later.';
+    this.setState({ errorMessage: msg });
     console.error(params.e);
+    if (cb) { cb() }
   }
 
   trackEmailState({ target }) {
@@ -54,21 +47,20 @@ class App extends Component {
   }
 
   async submitEmail(e) {
-    e.preventDefault();
+    if (e) { e.preventDefault(); }
     this.setState({ loading: true })
     this.closeAlert();
     try {
       const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
       const user = await dbCall.json();
-      debugger
       user.error ? this.setState({ newUserForm: true, loading: false }) : this.loginUser(user);
     } catch(e) {
-      this.errorHandling({ e: e, msg: 'Sorry. Something went wrong. Please try again later.', logout: true });
+      this.errorHandling({ e }, this.logout);
     }
   }
 
   async registerEmail(e) {
-    e.preventDefault();
+    if (e) { e.preventDefault(); }
     this.setState({ loading: true })
     try {
       const dbCall = await fetch(`http://localhost:5555/api/v1/user?email=${this.state.emailInput}`);
@@ -80,7 +72,7 @@ class App extends Component {
   }
 
   logout(e) {
-    e.preventDefault();
+    if (e) { e.preventDefault(); }
     this.setState({
       emailInput: '',
       email: '',
@@ -110,6 +102,9 @@ class App extends Component {
             <div className="container">
               <div className="alert alert-danger flash-alert" role="alert" onClick={this.closeAlert}>
                 { this.state.errorMessage }
+                <button type="button" className="close" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
             </div>
         }
